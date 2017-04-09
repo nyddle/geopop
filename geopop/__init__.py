@@ -9,10 +9,10 @@ from collections import namedtuple
 
 from .exceptions import NoGeodata, LocationNotFound
 
-
-header = ('geonameid', 'name', 'asciiname', 'alternatenames', 'latitude', 'longitude', 'feature_class',
-          'feature_code', 'country_code', 'cc2', 'a1', 'a2', 'a3', 'a4', 'population', 'elevation',
-          'dem', 'timezone', 'modification_date')
+header = ('geonameid', 'name', 'asciiname', 'alternatenames', 'latitude',
+          'longitude', 'feature_class', 'feature_code', 'country_code', 'cc2',
+          'a1', 'a2', 'a3', 'a4', 'population', 'elevation', 'dem', 'timezone',
+          'modification_date')
 
 Location = namedtuple('Location', header)
 
@@ -25,7 +25,7 @@ class GeoPop(object):
 
     def available_countries(self):
 
-        return filter(lambda x: x.endswith(('.txt',)),
+        return filter(lambda x: x.endswith(('.txt', )),
                       os.listdir(self.data_dir))
 
     def location(self, name):
@@ -59,10 +59,10 @@ class GeoPop(object):
 
         return population
 
-
     def __init__(self, data_dir=None):
 
-        self.data_dir = data_dir or os.path.join(os.path.dirname(__file__),'../data')
+        self.data_dir = data_dir or os.path.join(
+            os.path.dirname(__file__), '../data')
         self.geo_data = []
         self.locations = {}
 
