@@ -25,8 +25,8 @@ class GeoPop(object):
 
     def available_countries(self):
 
-        return filter(lambda x: x.endswith(('.txt', )),
-                      os.listdir(self.data_dir))
+        return list(filter(lambda x: x.endswith(('.txt', )),
+                      os.listdir(self.data_dir)))
 
     def location(self, name):
 
@@ -50,7 +50,7 @@ class GeoPop(object):
         for loc in self.geo_data:
 
             distance = vincenty((location.latitude, location.longitude),
-                                (loc.latitude, loc.longitude)).miles
+                                (loc.latitude, loc.longitude)).kilometers
 
             if distance > proximity:
                 continue
