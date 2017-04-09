@@ -7,15 +7,15 @@ import glob
 
 from collections import namedtuple
 
+from .exceptions import NoGeodata, LocationNotFound
+
 
 header = ('geonameid', 'name', 'asciiname', 'alternatenames', 'latitude', 'longitude', 'feature_class',
           'feature_code', 'country_code', 'cc2', 'a1', 'a2', 'a3', 'a4', 'population', 'elevation',
           'dem', 'timezone', 'modification_date')
 
-Location = namedtuple('Location', header, verbose=True)
+Location = namedtuple('Location', header)
 
-class LocationNotFound(Exception):
-    pass
 
 class GeoPop(object):
     """
@@ -32,7 +32,7 @@ class GeoPop(object):
 
         return self.locations.get(name.lower(), None)
 
-    def population(self, name, proximity):
+    def population(self, name: str, proximity: int) -> int:
         """
 
         :param name: location name, e.g. Moscow
@@ -60,11 +60,14 @@ class GeoPop(object):
         return population
 
 
-    def __init__(self, data_dir='./data'):
+    def __init__(self, data_dir=None):
 
-        self.data_dir = data_dir
+        self.data_dir = data_dir or os.path.join(os.path.dirname(__file__),'../data')
         self.geo_data = []
         self.locations = {}
+
+        if not self.available_countries():
+            raise NoGeodata
 
         for country_data in glob.glob(os.path.join(self.data_dir, '*.txt')):
             with open(country_data) as geo_data:
