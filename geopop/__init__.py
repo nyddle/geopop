@@ -5,7 +5,7 @@ import os
 from geopy.distance import vincenty
 import glob
 
-from collections import namedtuple
+from collections import namedtuple, defaultdict
 
 from .exceptions import NoGeodata, LocationNotFound
 
@@ -46,14 +46,16 @@ class GeoPop(object):
             raise LocationNotFound
 
         location = self.locations[name.lower()]
-
-        for loc in self.geo_data:
+        print(location)
+        for loc in self.geo_data[location.country_code]:
 
             distance = vincenty((location.latitude, location.longitude),
                                 (loc.latitude, loc.longitude)).kilometers
-
+            #print(distance)
             if distance > proximity:
                 continue
+            #else:
+            #    print(loc)
 
             population += int(loc.population)
 
@@ -63,7 +65,7 @@ class GeoPop(object):
 
         self.data_dir = data_dir or os.path.join(
             os.path.dirname(__file__), '../data')
-        self.geo_data = []
+        self.geo_data = defaultdict(list)
         self.locations = {}
 
         if not self.available_countries():
@@ -73,5 +75,7 @@ class GeoPop(object):
             with open(country_data) as geo_data:
                 for line in geo_data:
                     loc = Location(*line.split("\t"))
-                    self.geo_data.append(loc)
                     self.locations[loc.name.lower()] = loc
+                    if loc.population == '0':
+                        continue
+                    self.geo_data[loc.country_code].append(loc)
